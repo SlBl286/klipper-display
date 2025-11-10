@@ -3,41 +3,36 @@ import { FaWifi } from "react-icons/fa6";
 import { HiOutlineLightBulb } from "react-icons/hi";
 import { invoke } from "@tauri-apps/api/core";
 export const FilePage = () => {
-  const [ip, setIp] = useState("");
+  const [ip, setIp] =
+    useState<{ ssid: string; signal?: number; security?: string }[]>([]);
 
   useEffect(() => {
     async function loadData() {
-      setIp(await invoke("get_ip"));
+      var a = await invoke<
+        { ssid: string; signal?: number; security?: string }[]
+      >("scan_wifi");
+      setIp(a);
     }
     loadData();
   }, []);
+
+  const connectWifi = (ssid: string, password: string) => {
+    invoke("connect_wifi", { ssid: ssid, password: password });
+  }
   return (
     <div className="w-11/12 flex bg-gray-600 m-4 p-4 rounded-3xl text-white ">
-      <div className="w-2/5 flex flex-col">
-        <span className="text-purple-500 font-bold text-2xl">File</span>
-        <div className="w-full grid grid-cols-2 gap-y-1">
-          <div className="rounded-xl bg-gray-400 h-13 w-13 flex items-center justify-center">
-            <HiOutlineLightBulb size={30} className="text-purple-500" />
-          </div>
-          <div className="rounded-xl bg-gray-400 h-13 w-13 flex items-center justify-center">
-            <FaWifi size={30} className="text-purple-500" />
-          </div>
-          <div className="rounded-xl bg-gray-400 h-13 w-13 flex items-center justify-center">
-            <HiOutlineLightBulb size={30} className="text-purple-500" />
-          </div>
-          <div className="rounded-xl bg-gray-400 h-13 w-13 flex items-center justify-center">
-            <HiOutlineLightBulb size={30} className="text-purple-500" />
-          </div>
-          <div className="rounded-xl bg-gray-400 h-13 w-13 flex items-center justify-center">
-            <HiOutlineLightBulb size={30} className="text-purple-500" />
-          </div>
+      <div className="w-full grid grid-cols-2 gap-y-1">
+          {ip &&
+            ip.map((item, index) => (
+              <div 
+              onClick={()=> {
+                connectWifi(item.ssid, "Abcd1234");
+              }}
+              className="rounded-xl bg-gray-400 w-full flex items-center justify-center" key={item.ssid + item.security}>
+                <HiOutlineLightBulb size={30} className="text-purple-500" /> {item.ssid}
+              </div>
+            ))}
         </div>
-        <span className="font-bold">IP : {ip}</span>
-      </div>
-      <div className="w-1/5"></div>
-      <div className="w-2/5">
-        <img src="/tauri.svg" />
-      </div>
     </div>
   );
 };

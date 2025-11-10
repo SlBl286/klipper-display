@@ -1,5 +1,4 @@
 mod wifi;
-
 use local_ip_address::local_ip;
 #[cfg(target_os = "linux")]
 use wifi::LinuxWifi as Wifi;
@@ -9,10 +8,31 @@ use wifi::WindowsWifi as Wifi;
 use crate::wifi::WifiControl;
 
 #[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
+fn scan_wifi() ->  Vec<wifi::WifiNetwork> {
+    println!("🔍 Đang quét mạng Wi-Fi...");
+    let nets: Vec<wifi::WifiNetwork> = Wifi::scan().unwrap();
+
+    for net in nets.iter() {
+        println!("📶 {} ({:?}%)", net.ssid, net.signal);
+    }
+
+   nets
 }
 
+#[tauri::command]
+fn connect_wifi(ssid: String, password: String) -> String {
+    println!("🔌 Đang kết nối tới mạng Wi-Fi: {}", ssid);
+    match Wifi::connect(&ssid, &password) {
+        Ok(_) => {
+            println!("✅ Kết nối thành công tới mạng Wi-Fi: {}", ssid);
+            format!("Kết nối thành công tới mạng Wi-Fi: {}", ssid)
+        }
+        Err(e) => {
+            println!("❌ Kết nối thất bại tới mạng Wi-Fi: {}. Lỗi: {}", ssid, e);
+            format!("Kết nối thất bại tới mạng Wi-Fi: {}. Lỗi: {}", ssid, e)
+        }
+    }
+}
 #[tauri::command]
 fn get_ip() -> String {
     let my_ip = local_ip().unwrap();
@@ -22,15 +42,10 @@ fn get_ip() -> String {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    println!("🔍 Đang quét mạng Wi-Fi...");
-    let nets = Wifi::scan().unwrap();
-
-    for net in nets.iter() {
-        println!("📶 {} ({:?}%)", net.ssid, net.signal);
-    }
+   
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet, get_ip])
+        .invoke_handler(tauri::generate_handler![scan_wifi, get_ip,connect_wifi])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
