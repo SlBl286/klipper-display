@@ -8,7 +8,7 @@ use wifi::WindowsWifi as Wifi;
 use crate::wifi::WifiControl;
 
 #[tauri::command]
-fn scan_wifi() ->  Vec<wifi::WifiNetwork> {
+fn scan_wifi() -> Vec<wifi::WifiNetwork> {
     println!("🔍 Đang quét mạng Wi-Fi...");
     let nets: Vec<wifi::WifiNetwork> = Wifi::scan().unwrap();
 
@@ -16,7 +16,7 @@ fn scan_wifi() ->  Vec<wifi::WifiNetwork> {
         println!("📶 {} ({:?}%)", net.ssid, net.signal);
     }
 
-   nets
+    nets
 }
 
 #[tauri::command]
@@ -35,17 +35,18 @@ fn connect_wifi(ssid: String, password: String) -> String {
 }
 #[tauri::command]
 fn get_ip() -> String {
-    let my_ip = local_ip().unwrap();
-    println!("🌐 IP hiện tại: {}", my_ip);
-    format!("{}", my_ip)
+    if let Some(ip) = local_ip().ok() {
+        format!("{}", ip)
+    } else {
+        format!("Chưa kết nối mạng!")
+    }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-   
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![scan_wifi, get_ip,connect_wifi])
+        .invoke_handler(tauri::generate_handler![scan_wifi, get_ip, connect_wifi])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

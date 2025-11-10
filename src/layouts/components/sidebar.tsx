@@ -5,41 +5,54 @@ import { GoHomeFill } from "react-icons/go";
 import { RiSettings3Fill } from "react-icons/ri";
 import { GiSettingsKnobs } from "react-icons/gi";
 import { Link } from "react-router-dom";
-export const  Sidebar = () => {
+import { cn } from "@/lib/utils";
+export const Sidebar = () => {
+  const path = window.location.pathname;
   return (
     <div className="w-1/12 flex flex-col space-y-2 bg-gray-600 h-full">
       <Link
         to="/"
-        className="w-full cursor-pointer flex items-center justify-center py-2 h-1/4 bg-gray-400"
-        
+        className={cn(
+          "w-full cursor-pointer flex items-center justify-center py-2 h-1/4",
+          path === "/" ? "bg-gray-400 text-purple-400" : " bg-gray-600 text-white" 
+        )}
       >
-        <GoHomeFill size={30} className="text-purple-400" />
+        <GoHomeFill size={30} />
       </Link>
       <Link
-      to={"/file"}
-        className="w-full cursor-pointer flex items-center justify-center py-2 h-1/4"
-        
+        to={"/file"}
+       className={cn(
+          "w-full cursor-pointer flex items-center justify-center py-2 h-1/4",
+          path === "/file" ? "bg-gray-400 text-purple-400" : " bg-gray-600 text-white" 
+        )}
       >
-        <FaFolderClosed size={30} className="text-white" />
+        <FaFolderClosed size={30} />
       </Link>
-      <div
-        className="w-full cursor-pointer flex items-center justify-center py-2 h-1/4"
-        
+      <Link
+        to={"/control"}
+       className={cn(
+          "w-full cursor-pointer flex items-center justify-center py-2 h-1/4",
+          path === "/control" ? "bg-gray-400 text-purple-400" : " bg-gray-600 text-white" 
+        )}
       >
-        <GiSettingsKnobs size={30} className="text-white" />
-      </div>
-      <div
-        className="w-full cursor-pointer flex items-center justify-center py-2 h-1/4"
-        
-      >
-        <RiSettings3Fill size={30} className="text-white" />
-      </div>{" "}
-      <div
-        className="w-full cursor-pointer flex items-center justify-center py-2 h-1/4"
-        
-      >
-        <TbMetronome size={30} className="text-white" />
-      </div>
+        <GiSettingsKnobs size={30} />
+      </Link>
+      <Link 
+         to={"/settings"}
+      className={cn(
+          "w-full cursor-pointer flex items-center justify-center py-2 h-1/4",
+          path === "/settings" ? "bg-gray-400 text-purple-400" : " bg-gray-600 text-white" 
+        )}>
+        <RiSettings3Fill size={30}  />
+      </Link>{" "}
+      <Link 
+           to={"/tuning"}
+      className={cn(
+          "w-full cursor-pointer flex items-center justify-center py-2 h-1/4",
+          path === "/tuning" ?  "bg-gray-400 text-purple-400" : " bg-gray-600 text-white" 
+        )}>
+        <TbMetronome size={30} />
+      </Link>
     </div>
   );
 };

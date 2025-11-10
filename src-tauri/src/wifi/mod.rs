@@ -16,17 +16,6 @@ pub struct WifiNetwork {
     pub signal: Option<i32>,
     pub security: Option<String>,
 }
-impl Into<InvokeResponseBody> for WifiNetwork {
-    fn into(self) -> InvokeResponseBody {
-        InvokeResponseBody::Json(
-            serde_json::json!({
-                "ssid": self.ssid,
-                "signal": self.signal,
-                "security": self.security,
-            }).to_string()
-        )
-    }
-}
 pub trait WifiControl {
     fn scan() -> anyhow::Result<Vec<WifiNetwork>>;
     fn connect(ssid: &str, password: &str) -> anyhow::Result<()>;

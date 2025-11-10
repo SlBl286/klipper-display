@@ -21,14 +21,14 @@ export const FilePage = () => {
   }
   return (
     <div className="w-11/12 flex bg-gray-600 m-4 p-4 rounded-3xl text-white ">
-      <div className="w-full grid grid-cols-2 gap-y-1">
+      <div className="w-full grid grid-cols-1 gap-y-2">
           {ip &&
             ip.map((item, index) => (
               <div 
               onClick={()=> {
                 connectWifi(item.ssid, "Abcd1234");
               }}
-              className="rounded-xl bg-gray-400 w-full flex items-center justify-center" key={item.ssid + item.security}>
+              className="rounded-xl bg-gray-400 w-full flex items-center justify-between" key={item.ssid + item.security}>
                 <HiOutlineLightBulb size={30} className="text-purple-500" /> {item.ssid}
               </div>
             ))}
